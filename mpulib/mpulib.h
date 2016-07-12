@@ -38,7 +38,7 @@
 // There are some practical limits on the speed that come from a 'userland'
 // implementation like this as opposed to a kernel or 'bare-metal' driver.
 #define MIN_SAMPLE_RATE 2
-#define MAX_SAMPLE_RATE 500
+#define MAX_SAMPLE_RATE 200
 
 typedef struct {
 	short offset[3];

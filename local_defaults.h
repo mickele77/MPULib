@@ -30,16 +30,9 @@
 // RPi I2C bus 
 #define DEFAULT_I2C_BUS 1
 
-// Gumstix Overo
-// #define DEFAULT_I2C_BUS 3
-
-// Gumstix Duovero
-// #define DEFAULT_I2C_BUS 2
-
-
 // platform independent
 
-#define DEFAULT_SAMPLE_RATE_HZ	10
+#define DEFAULT_SAMPLE_RATE_HZ	200
 
 #define DEFAULT_YAW_MIX_FACTOR 4
 
