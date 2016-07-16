@@ -65,8 +65,7 @@ void usage(char *argv_0) {
   exit(1);
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
   int opt;
   int i2c_bus = DEFAULT_I2C_BUS;
   int sample_rate = DEFAULT_SAMPLE_RATE_HZ;
