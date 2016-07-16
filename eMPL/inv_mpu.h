@@ -58,6 +58,10 @@
 /* #warning "No compass = less profit for Invensense. Lame." */
 #endif
 
+#ifdef AK89xx_SECONDARY
+#define MAX_COMPASS_SAMPLE_RATE (100)
+#endif
+
 #define INV_X_GYRO      (0x40)
 #define INV_Y_GYRO      (0x20)
 #define INV_Z_GYRO      (0x10)

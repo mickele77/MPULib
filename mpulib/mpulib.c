@@ -114,7 +114,12 @@ int mpulib_init(int i2c_bus, int sample_rate, int mix_factor) {
   printf(".");
   fflush(stdout);
 
-  if (mpu_set_compass_sample_rate(sample_rate)) {
+  int compass_sample_rate = sample_rate;
+  if( compass_sample_rate > MAX_COMPASS_SAMPLE_RATE ) {
+    compass_sample_rate = MAX_COMPASS_SAMPLE_RATE;
+  }
+
+  if (mpu_set_compass_sample_rate(compass_sample_rate)) {
     printf("\nmpu_set_compass_sample_rate() failed\n");
     return -1;
   }

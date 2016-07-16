@@ -577,7 +577,7 @@ static struct gyro_state_s st = {
 
 #ifdef AK89xx_SECONDARY
 static int setup_compass(void);
-#define MAX_COMPASS_SAMPLE_RATE (100)
+// #define MAX_COMPASS_SAMPLE_RATE (100)
 #endif
 
 /**
