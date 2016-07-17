@@ -37,15 +37,16 @@ int set_cal(int mag, char *cal_file);
 void read_loop(unsigned int sample_rate);
 void print_fused_euler_angles(mpudata_t *mpu);
 void print_fused_quaternion(mpudata_t *mpu);
+void print_raw_accel(mpudata_t *mpu);
 void print_calibrated_accel(mpudata_t *mpu);
+void print_raw_mag(mpudata_t *mpu);
 void print_calibrated_mag(mpudata_t *mpu);
 void register_sig_handler();
 void sigint_handler(int sig);
 
 int done;
 
-void usage(char *argv_0)
-{
+void usage(char *argv_0) {
   printf("\nUsage: %s [options]\n", argv_0);
   printf("  -b <i2c-bus>          The I2C bus number where the IMU is. The default is 1 to use /dev/i2c-1.\n");
   printf("  -s <sample-rate>      The IMU sample rate in Hz. Range 2-50, default 10.\n");
@@ -64,8 +65,7 @@ void usage(char *argv_0)
   exit(1);
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
   int opt, len;
   int i2c_bus = DEFAULT_I2C_BUS;
   int sample_rate = DEFAULT_SAMPLE_RATE_HZ;
@@ -189,7 +189,7 @@ void read_loop(unsigned int sample_rate)
     if (mpulib_read_dmp(&mpu) == 0) {
       // print_fused_euler_angles(&mpu);
       // printf_fused_quaternions(&mpu);
-      print_calibrated_accel(&mpu);
+      print_raw_accel(&mpu);
       // print_calibrated_mag(&mpu);
     }
 
@@ -199,8 +199,7 @@ void read_loop(unsigned int sample_rate)
   printf("\n\n");
 }
 
-void print_fused_euler_angles(mpudata_t *mpu)
-{
+void print_fused_euler_angles(mpudata_t *mpu) {
   printf("\rX: %0.0f Y: %0.0f Z: %0.0f        ",
 	 mpu->fusedEuler[VEC3_X] * RAD_TO_DEGREE, 
 	 mpu->fusedEuler[VEC3_Y] * RAD_TO_DEGREE, 
@@ -209,8 +208,7 @@ void print_fused_euler_angles(mpudata_t *mpu)
   fflush(stdout);
 }
 
-void print_fused_quaternions(mpudata_t *mpu)
-{
+void print_fused_quaternions(mpudata_t *mpu) {
   printf("\rW: %0.2f X: %0.2f Y: %0.2f Z: %0.2f        ",
 	 mpu->fusedQuat[QUAT_W],
 	 mpu->fusedQuat[QUAT_X],
@@ -220,9 +218,19 @@ void print_fused_quaternions(mpudata_t *mpu)
   fflush(stdout);
 }
 
-void print_calibrated_accel(mpudata_t *mpu)
-{
-  printf("\rX: %05d Y: %05d Z: %05d        ",
+void print_raw_accel(mpudata_t *mpu) {
+  printf("\ra\tt: %05ld\tX: %05d\tY: %05d\tZ: %05d        ",
+	 mpu->dmpTimestamp,
+	 mpu->rawAccel[VEC3_X], 
+	 mpu->rawAccel[VEC3_Y], 
+	 mpu->rawAccel[VEC3_Z]);
+
+  fflush(stdout);
+}
+
+void print_calibrated_accel(mpudata_t *mpu) {
+  printf("\ra\tt: %05ld\tX: %05d\tY: %05d\tZ: %05d        ",
+	 mpu->dmpTimestamp,
 	 mpu->calibratedAccel[VEC3_X], 
 	 mpu->calibratedAccel[VEC3_Y], 
 	 mpu->calibratedAccel[VEC3_Z]);
@@ -230,9 +238,19 @@ void print_calibrated_accel(mpudata_t *mpu)
   fflush(stdout);
 }
 
-void print_calibrated_mag(mpudata_t *mpu)
-{
-  printf("\rX: %03d Y: %03d Z: %03d        ",
+void print_raw_mag(mpudata_t *mpu) {
+  printf("\rmag\tt: %05ld\tX: %03d\tY: %03d\tZ: %03d        ",
+	 mpu->magTimestamp,
+	 mpu->rawMag[VEC3_X], 
+	 mpu->rawMag[VEC3_Y], 
+	 mpu->rawMag[VEC3_Z]);
+
+  fflush(stdout);
+}
+
+void print_calibrated_mag(mpudata_t *mpu) {
+  printf("\rmag\tt: %05ld\tX: %03d\tY: %03d\tZ: %03d        ",
+	 mpu->magTimestamp,
 	 mpu->calibratedMag[VEC3_X], 
 	 mpu->calibratedMag[VEC3_Y], 
 	 mpu->calibratedMag[VEC3_Z]);
@@ -240,8 +258,7 @@ void print_calibrated_mag(mpudata_t *mpu)
   fflush(stdout);
 }
 
-int set_cal(int mag, char *cal_file)
-{
+int set_cal(int mag, char *cal_file) {
   int i;
   FILE *f;
   char buff[32];
@@ -307,13 +324,12 @@ int set_cal(int mag, char *cal_file)
   if (mag) 
     mpulib_set_mag_cal(&cal);
   else 
-    mpulib_set_accel_cal(&cal);
+    mpulib_set_dmp_accel_cal(&cal);
 
   return 0;
 }
 
-void register_sig_handler()
-{
+void register_sig_handler() {
   struct sigaction sia;
 
   bzero(&sia, sizeof sia);
@@ -325,7 +341,6 @@ void register_sig_handler()
   } 
 }
 
-void sigint_handler(int sig)
-{
+void sigint_handler(int sig) {
   done = 1;
 }

@@ -72,6 +72,7 @@ int mpulib_read(mpudata_t *mpu);
 int mpulib_read_dmp(mpudata_t *mpu);
 int mpulib_read_mag(mpudata_t *mpu);
 void mpulib_set_accel_cal(caldata_t *cal);
+void mpulib_set_dmp_accel_cal(caldata_t *cal);
 void mpulib_set_mag_cal(caldata_t *cal);
 
 #endif /* MPULIB_H */

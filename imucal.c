@@ -65,12 +65,11 @@ void usage(char *argv_0) {
   exit(1);
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
   int opt;
   int i2c_bus = DEFAULT_I2C_BUS;
   int sample_rate = DEFAULT_SAMPLE_RATE_HZ;
-	
+  
   mag_mode = -1;
 
   memset(calFile, 0, sizeof(calFile));
@@ -94,9 +93,11 @@ int main(int argc, char **argv)
       if (errno == EINVAL)
 	usage(argv[0]);
 			
-      if (sample_rate < MIN_SAMPLE_RATE || sample_rate > MAX_SAMPLE_RATE)
+      if (sample_rate < MIN_SAMPLE_RATE || sample_rate > MAX_SAMPLE_RATE){
+	printf("Sample rate out of range\n");
 	usage(argv[0]);
-
+      }
+	
       break;
 
     case 'y':
@@ -153,8 +154,7 @@ int main(int argc, char **argv)
   return 0;
 }
 
-void read_loop(unsigned int sample_rate)
-{
+void read_loop(unsigned int sample_rate) {
   int i, change;
   unsigned long loop_delay;
   mpudata_t mpu;
@@ -222,8 +222,7 @@ void read_loop(unsigned int sample_rate)
   printf("\n\n");
 }
 
-void print_accel(mpudata_t *mpu)
-{
+void print_accel(mpudata_t *mpu) {
   printf("\rX %d|%d|%d    Y %d|%d|%d    Z %d|%d|%d             ",
 	 minVal[0], mpu->rawAccel[0], maxVal[0], 
 	 minVal[1], mpu->rawAccel[1], maxVal[1],
@@ -232,8 +231,7 @@ void print_accel(mpudata_t *mpu)
   fflush(stdout);
 }
 
-void print_mag(mpudata_t *mpu)
-{
+void print_mag(mpudata_t *mpu) {
   printf("\rX %d|%d|%d    Y %d|%d|%d    Z %d|%d|%d             ",
 	 minVal[0], mpu->rawMag[0], maxVal[0], 
 	 minVal[1], mpu->rawMag[1], maxVal[1],
@@ -242,8 +240,7 @@ void print_mag(mpudata_t *mpu)
   fflush(stdout);
 }
 
-void write_cal()
-{
+void write_cal() {
   int i, fd;
   char buff[32];
 
@@ -262,8 +259,7 @@ void write_cal()
   close(fd);
 }
 
-void register_sig_handler()
-{
+void register_sig_handler() {
   struct sigaction sia;
 
   bzero(&sia, sizeof sia);
@@ -275,7 +271,6 @@ void register_sig_handler()
   } 
 }
 
-void sigint_handler(int sig)
-{
+void sigint_handler(int sig) {
   done = 1;
 }

@@ -209,6 +209,37 @@ void mpulib_set_accel_cal(caldata_t *cal) {
   use_accel_cal = 1;
 }
 
+void mpulib_set_dmp_accel_cal(caldata_t *cal) {
+  int i;
+  long bias[3];
+
+  if (!cal) {
+    use_accel_cal = 0;
+    return;
+  }
+
+  memcpy(&accel_cal_data, cal, sizeof(caldata_t));
+
+  for (i = 0; i < 3; i++) {
+    if (accel_cal_data.range[i] < 1)
+      accel_cal_data.range[i] = 1;
+    else if (accel_cal_data.range[i] > ACCEL_SENSOR_RANGE)
+      accel_cal_data.range[i] = ACCEL_SENSOR_RANGE;
+
+    bias[i] = -accel_cal_data.offset[i];
+  }
+
+  if (debug_on) {
+    printf("\naccel cal (range : offset)\n");
+
+    for (i = 0; i < 3; i++)
+      printf("%d : %d\n", accel_cal_data.range[i], accel_cal_data.offset[i]);
+  }
+  dmp_set_accel_bias(bias);
+
+  use_accel_cal = 1;
+}
+
 void mpulib_set_mag_cal(caldata_t *cal) {
   int i;
 
