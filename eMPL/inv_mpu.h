@@ -143,6 +143,12 @@ int mpu_set_accel_bias_6500_reg(const long *accel_bias);
 int mpu_read_6050_accel_bias(long *accel_bias);
 int mpu_set_accel_bias_6050_reg(const long *accel_bias);
 
+#ifdef MPU6050
+#define mpu_set_accel_bias mpu_set_accel_bias_6050_reg
+#elif defined MPU6500
+#define mpu_set_accel_bias mpu_set_accel_bias_6500_reg
+#endif
+
 /* Data getter/setter APIs */
 int mpu_get_gyro_reg(short *data, unsigned long *timestamp);
 int mpu_get_accel_reg(short *data, unsigned long *timestamp);

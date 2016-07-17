@@ -67,6 +67,7 @@ typedef struct {
 
 void mpulib_set_debug(int on);
 int mpulib_init(int i2c_bus, int sample_rate, int yaw_mixing_factor);
+int mpulib_run_self_test(void);
 void mpulib_exit();
 int mpulib_read(mpudata_t *mpu);
 int mpulib_read_dmp(mpudata_t *mpu);

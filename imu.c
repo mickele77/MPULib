@@ -153,8 +153,10 @@ int main(int argc, char **argv) {
   if (mpulib_init(i2c_bus, sample_rate, yaw_mix_factor))
     exit(1);
 
-  set_cal(0, accel_cal_file);
-  set_cal(1, mag_cal_file);
+  mpulib_run_self_test();
+
+  // set_cal(0, accel_cal_file);
+  // set_cal(1, mag_cal_file);
 
   if (accel_cal_file)
     free(accel_cal_file);

@@ -29,12 +29,6 @@
 #include "inv_mpu_dmp_motion_driver.h"
 #include "mpulib.h"
 
-#ifdef MPU6050
-#define mpu_set_accel_bias mpu_set_accel_bias_6050_reg
-#elif defined MPU6500
-#define mpu_set_accel_bias mpu_set_accel_bias_6500_reg
-#endif
-
 static int data_ready();
 static void calibrate_data(mpudata_t *mpu);
 static void tilt_compensate(quaternion_t magQ, quaternion_t unfusedQ);
@@ -168,6 +162,32 @@ int mpulib_init(int i2c_bus, int sample_rate, int mix_factor) {
   printf(" done\n\n");
 
   return 0;
+}
+
+int mpulib_run_self_test(void) {
+  long gyro[3], accel[3];
+  if( mpu_run_self_test(gyro, accel) ) {
+    /* Test passed: we can trust the gyro data here, 
+     * so let's push it down to the DMP. */
+    float sens;
+    unsigned short accel_sens;
+    mpu_get_gyro_sens(&sens);
+    gyro[0] = (long)(gyro[0] * sens);
+    gyro[1] = (long)(gyro[1] * sens);
+    gyro[2] = (long)(gyro[2] * sens);
+    dmp_set_gyro_bias(gyro);
+    mpu_get_accel_sens(&accel_sens);
+    accel[0] *= accel_sens;
+    accel[1] *= accel_sens;
+    accel[2] *= accel_sens;
+    dmp_set_accel_bias(accel);
+    printf("\nsetting bias succesfully ......\n");
+    return 0;
+  } else {
+    printf("\nbias has not been modified ......\n");
+    return -1;
+  }
+
 }
 
 void mpulib_exit() {
@@ -489,4 +509,3 @@ unsigned short inv_orientation_matrix_to_scalar(const signed char *mtx) {
   scalar |= inv_row_2_scale(mtx + 6) << 6;
   return scalar;
 }
-
